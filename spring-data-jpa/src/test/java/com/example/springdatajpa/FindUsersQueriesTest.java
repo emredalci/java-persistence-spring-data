@@ -8,6 +8,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -129,5 +130,14 @@ class FindUsersQueriesTest extends AbstractTestContainer{
                 () -> assertEquals(3, usersList1.size()),
                 () -> assertEquals(7, usersList2.size())
         );
+    }
+
+    @Test
+    void testStreamable() {
+        try (Stream<User> result = userRepository.findByEmailContaining("someother")
+                .and(userRepository.findByLevel(2))
+                .stream().distinct()) {
+            assertEquals(7, result.count());
+        }
     }
 }
