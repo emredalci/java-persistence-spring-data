@@ -1,5 +1,6 @@
 package com.example.mappingvaluetypes.model;
 
+import com.example.mappingvaluetypes.converter.MonetaryAmountConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.*;
@@ -18,6 +19,11 @@ public class Item {
     @Access(AccessType.PROPERTY) // access through getter/setter methods by Jpa provider
     @Column(name = "ITEM_NAME")
     private String name;
+
+    @NotNull
+    @Convert(converter = MonetaryAmountConverter.class)
+    @Column(name = "PRICE", length = 63)
+    private MonetaryAmount buyNowPrice;
 
     @NotNull
     private String description;
@@ -110,5 +116,13 @@ public class Item {
 
     public void setInitialPrice(BigDecimal initialPrice) {
         this.initialPrice = initialPrice;
+    }
+
+    public MonetaryAmount getBuyNowPrice() {
+        return buyNowPrice;
+    }
+
+    public void setBuyNowPrice(MonetaryAmount buyNowPrice) {
+        this.buyNowPrice = buyNowPrice;
     }
 }
