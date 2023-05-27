@@ -6,3 +6,6 @@ Topic order
 3. Mapping Value Types
 4. Mapping Value Types User Type
 5. Mapping MappedSuperClass
+6. Mapping Table Per Class
+7. Mapping Joined
+8. Mapping Collections - setofstrings,
