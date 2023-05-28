@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Item {
+public class SetOfStringsItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,16 +17,16 @@ public class Item {
 
     @ElementCollection
     @CollectionTable(
-            name = "IMAGE", // Defaults to ITEM_IMAGES
-            joinColumns = @JoinColumn(name = "ITEM_ID") // Defaults to ITEM_ID
+            name = "IMAGE_SET", // Defaults to ITEM_IMAGES
+            joinColumns = @JoinColumn(name = "SETOFSTRINGS_ID") // Defaults to ITEM_ID
     )
-    @Column(name = "FILE_NAME") // Defaults to IMAGES
-    private Set<String> images = new HashSet<>();
+    @Column(name = "FILENAME_SET") // Defaults to IMAGES
+    private Set<String> imagesSet = new HashSet<>();
 
-    public Item() {
+    public SetOfStringsItem() {
     }
 
-    public Item(String name) {
+    public SetOfStringsItem(String name) {
         this.name = name;
     }
 
@@ -38,11 +38,11 @@ public class Item {
         return name;
     }
 
-    public Set<String> getImages() {
-        return Collections.unmodifiableSet(images);
+    public Set<String> getImagesSet() {
+        return Collections.unmodifiableSet(imagesSet);
     }
 
     public void addImage(String imageName) {
-        images.add(imageName);
+        imagesSet.add(imageName);
     }
 }

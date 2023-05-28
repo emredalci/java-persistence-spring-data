@@ -1,8 +1,8 @@
 package com.example.mappingcollections.setofstrings;
 
 import com.example.mappingcollections.AbstractTestContainer;
-import com.example.mappingcollections.setofstrings.model.Item;
-import com.example.mappingcollections.setofstrings.repository.ItemRepository;
+import com.example.mappingcollections.setofstrings.model.SetOfStringsItem;
+import com.example.mappingcollections.setofstrings.repository.SetOfStringsItemRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,27 +15,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SetOfStringsTest extends AbstractTestContainer {
 
     @Autowired
-    private ItemRepository itemRepository;
+    private SetOfStringsItemRepository setOfStringsItemRepository;
 
     @Test
     void storeLoadEntities(){
-        Item item = new Item("Foo");
+        SetOfStringsItem setOfStringsItem = new SetOfStringsItem("Foo");
 
-        item.addImage("background.jpg");
-        item.addImage("foreground.jpg");
-        item.addImage("landscape.jpg");
-        item.addImage("portrait.jpg");
+        setOfStringsItem.addImage("background.jpg");
+        setOfStringsItem.addImage("foreground.jpg");
+        setOfStringsItem.addImage("landscape.jpg");
+        setOfStringsItem.addImage("portrait.jpg");
 
-        itemRepository.save(item);
+        setOfStringsItemRepository.save(setOfStringsItem);
 
-        Item itemById = itemRepository.findItemWithImages(item.getId());
+        SetOfStringsItem setOfStringsItemById = setOfStringsItemRepository.findItemWithImages(setOfStringsItem.getId());
 
-        List<Item> allItems = itemRepository.findAll();
-        Set<String> images = itemRepository.findImagesNative(item.getId());
+        List<SetOfStringsItem> allSetOfStringsItems = setOfStringsItemRepository.findAll();
+        Set<String> images = setOfStringsItemRepository.findImagesNative(setOfStringsItem.getId());
 
         assertAll(
-                () -> assertEquals(4, itemById.getImages().size()),
-                () -> assertEquals(1, allItems.size()),
+                () -> assertEquals(4, setOfStringsItemById.getImagesSet().size()),
+                () -> assertEquals(1, allSetOfStringsItems.size()),
                 () -> assertEquals(4, images.size())
         );
     }
