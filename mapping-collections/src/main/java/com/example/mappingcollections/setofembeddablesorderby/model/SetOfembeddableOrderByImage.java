@@ -1,4 +1,4 @@
-package com.example.mappingcollections.setofembeddables.model;
+package com.example.mappingcollections.setofembeddablesorderby.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -7,7 +7,7 @@ import org.hibernate.annotations.Parent;
 import java.util.Objects;
 
 @Embeddable
-public class SetOfEmbeddableImage {
+public class SetOfembeddableOrderByImage {
 
     @Column(nullable = false)
     private String filename;
@@ -16,13 +16,13 @@ public class SetOfEmbeddableImage {
 
     private int height;
 
-    @Parent // This is a back-pointer to be symmetric with the database primary key.
-    private SetOfEmbeddableItem item;
+    @Parent
+    private SetOfEmbeddableOrderByItem item;
 
-    public SetOfEmbeddableImage() {
+    public SetOfembeddableOrderByImage() {
     }
 
-    public SetOfEmbeddableImage(String filename, int width, int height) {
+    public SetOfembeddableOrderByImage(String filename, int width, int height) {
         this.filename = filename;
         this.width = width;
         this.height = height;
@@ -52,21 +52,20 @@ public class SetOfEmbeddableImage {
         this.height = height;
     }
 
-    public SetOfEmbeddableItem getItem() {
+    public SetOfEmbeddableOrderByItem getItem() {
         return item;
     }
 
-    public void setItem(SetOfEmbeddableItem item) {
+    public void setItem(SetOfEmbeddableOrderByItem item) {
         this.item = item;
     }
 
-    // Whenever value-types are managed in collections, overriding equals/hashCode is a good idea!
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SetOfEmbeddableImage that = (SetOfEmbeddableImage) o;
+        SetOfembeddableOrderByImage that = (SetOfembeddableOrderByImage) o;
 
         if (width != that.width) return false;
         if (height != that.height) return false;
