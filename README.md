@@ -8,4 +8,5 @@ Topic order
 5. Mapping MappedSuperClass
 6. Mapping Table Per Class
 7. Mapping Joined
-8. Mapping Collections - setofstrings,listofstings,mapofstrings,sortedmapofstrings, sortedsetofstrings
+8. Mapping Collections - setofstrings,listofstings,mapofstrings,sortedmapofstrings, sortedsetofstrings, setofembeddables,
+setofembeddablesorderby, mapofstringembeddables, mapofembeddable
