@@ -1,5 +1,5 @@
 
-package com.example.onetoonesharedprimarykey.model;
+package com.example.onetooneforeignkey.model;
 
 
 import jakarta.persistence.Entity;

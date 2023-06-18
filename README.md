@@ -11,4 +11,4 @@ Topic order
 8. Mapping Collections - setofstrings,listofstings,mapofstrings,sortedmapofstrings, sortedsetofstrings, setofembeddables,
 setofembeddablesorderby, mapofstringembeddables, mapofembeddable
 9. Mapping Association
-10. Advanced Entity Association - sharedprimarykey, 
+10. Advanced Entity Association - onetoone-sharedprimarykey, onetoone-foreignkey
