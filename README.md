@@ -12,4 +12,4 @@ Topic order
 setofembeddablesorderby, mapofstringembeddables, mapofembeddable
 9. Mapping Association
 10. Advanced Entity Association - onetoone-sharedprimarykey, onetoone-foreignkey, onetoone-jointable, onetomany-bag,
-onetomany-embeddable-jointable
+onetomany-embeddable-jointable, manytomany-bidirectional, manytomany-linkentity, manytomany-ternary
