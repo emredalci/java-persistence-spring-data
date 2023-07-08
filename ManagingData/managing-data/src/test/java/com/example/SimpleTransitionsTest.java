@@ -148,4 +148,67 @@ class SimpleTransitionsTest {
         }
     }
 
+    @Test
+    void makeTransient() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Item someItem = new Item();
+        someItem.setName("Some item");
+        em.persist(someItem);
+        em.getTransaction().commit();
+        em.close();
+        Long itemId = someItem.getId();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+
+        /*
+        If you call find(), Hibernate will execute a SELECT to
+        load the Item. If you call getReference(), Hibernate
+        will attempt to avoid the SELECT and return a proxy.
+         */
+        Item item = em.find(Item.class, itemId);
+        //Item item = em.getReference(Item.class, itemId);
+
+        /*
+        Calling remove() will queue the entity instance for deletion when
+        the unit of work completes, it is now in removed state. If remove()
+        is called on a proxy, Hibernate will execute a SELECT to load the data.
+        An entity instance has to be fully initialized during life cycle transitions. You may
+        have life cycle callback methods or an entity listener enabled, and the instance must pass through these
+        interceptors to complete its full life cycle.
+         */
+        em.remove(item);
+
+        /*
+        An entity in removed state is no longer in persistent state
+         */
+        assertFalse(em.contains(item));
+
+        /*
+        You cane make the removed instance persistent again, cancelling the deletion
+         */
+        //em.persist(item);
+
+        // hibernate.use_identifier_rollback was enabled, it now looks like a transient instance
+        assertNull(item.getId());
+
+        /*
+        When the transaction commits, Hibernate synchronizes the state transitions with the
+        database and executes the SQL DELETE. The JVM garbage collector detects that the
+        item is no longer referenced by anyone and finally deletes the last trace of
+        the data.
+         */
+        em.getTransaction().commit(); // Flush: Dirty check and SQL UPDATE
+        em.close();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        item = em.find(Item.class, itemId);
+        assertNull(item);
+        em.getTransaction().commit();
+        em.close();
+    }
+
 }
