@@ -1,6 +1,7 @@
 package com.example;
 
 import org.hibernate.LazyInitializationException;
+import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;
@@ -8,6 +9,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnitUtil;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -209,6 +212,46 @@ class SimpleTransitionsTest {
         assertNull(item);
         em.getTransaction().commit();
         em.close();
+    }
+
+    @Test
+    void refresh() throws ExecutionException, InterruptedException {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Item someItem = new Item();
+        someItem.setName("Some item");
+        em.persist(someItem);
+        em.getTransaction().commit();
+        em.close();
+        Long itemId = someItem.getId();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Item item = em.find(Item.class, itemId);
+        item.setName("Some name");
+
+        Executors.newSingleThreadExecutor().submit(() -> {
+            EntityManager em1 = emf.createEntityManager();
+            try {
+                em1.getTransaction().begin();
+                Session session = em1.unwrap(Session.class);
+                session.doWork(connection -> {
+                    Item item1 = em1.find(Item.class, itemId);
+                    item1.setName("Concurrent Update Name");
+                });
+
+                em1.getTransaction().commit();
+                em1.close();
+            } catch (Exception exception){
+                throw new RuntimeException("Concurrent operation failure : " + exception, exception);
+            }
+            return null;
+        }).get();
+
+        em.refresh(item);
+        em.getTransaction().commit(); // Flush: Dirty check and SQL Update
+        em.close();
+        assertEquals("Concurrent Update Name", item.getName());
     }
 
 }
