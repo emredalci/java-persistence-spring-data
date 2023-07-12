@@ -1,6 +1,7 @@
 package com.example;
 
 import org.hibernate.LazyInitializationException;
+import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleTransitionsTest {
 
-    private static EntityManagerFactory emf =
+    private static final EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("managing_data");
+
+    private static final EntityManagerFactory emf2 =
+            Persistence.createEntityManagerFactory("managing_data_replicate");
 
     @Test
     void makePersistent() {
@@ -242,7 +246,7 @@ class SimpleTransitionsTest {
 
                 em1.getTransaction().commit();
                 em1.close();
-            } catch (Exception exception){
+            } catch (Exception exception) {
                 throw new RuntimeException("Concurrent operation failure : " + exception, exception);
             }
             return null;
@@ -252,6 +256,43 @@ class SimpleTransitionsTest {
         em.getTransaction().commit(); // Flush: Dirty check and SQL Update
         em.close();
         assertEquals("Concurrent Update Name", item.getName());
+    }
+
+    @Test
+    void replicate() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Item someItem = new Item();
+        someItem.setName("Some item");
+        em.persist(someItem);
+        em.getTransaction().commit();
+        em.close();
+        Long itemId = someItem.getId();
+
+        EntityManager emA = getDatabaseA().createEntityManager();
+        emA.getTransaction().begin();
+        Item item = emA.find(Item.class, itemId);
+        emA.getTransaction().commit();
+
+        EntityManager emB = getDatabaseB().createEntityManager();
+        emB.getTransaction().begin();
+        emB.unwrap(Session.class).replicate(item, ReplicationMode.LATEST_VERSION);
+        Item item1 = emB.find(Item.class, itemId);
+
+        assertEquals("Some item", item1.getName());
+        emB.getTransaction().commit();
+
+        emA.close();
+        emB.close();
+
+    }
+
+    private EntityManagerFactory getDatabaseA() {
+        return emf;
+    }
+
+    private EntityManagerFactory getDatabaseB() {
+        return emf2;
     }
 
 }
