@@ -379,6 +379,37 @@ class SimpleTransitionsTest {
         em.close();
     }
 
+    @Test
+    void mergeDetached() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        User detachedUser = new User();
+        detachedUser.setUsername("foo");
+        detachedUser.setHomeAddress(new Address("Some Street", "1234", "Some City"));
+        em.persist(detachedUser);
+        em.getTransaction().commit();
+        em.close();
+        Long userId = detachedUser.getId();
+
+        detachedUser.setUsername("johndoe");
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        User mergedUser = em.merge(detachedUser); // Discard 'detachedUser' reference after merging!
+        mergedUser.setUsername("doejohn"); // The "mergedUser" is in persistent state
+
+        em.getTransaction().commit();
+        em.close();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        User user = em.find(User.class, userId);
+        assertEquals(user.getUsername(), "doejohn");
+        em.getTransaction().commit();
+        em.close();
+    }
+
     private EntityManagerFactory getDatabaseA() {
         return emf;
     }
