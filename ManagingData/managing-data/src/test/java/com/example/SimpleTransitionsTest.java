@@ -6,7 +6,9 @@ import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
@@ -310,6 +312,48 @@ class SimpleTransitionsTest {
         em.getTransaction().commit();
         em.close();
 
+    }
+
+    @Test
+    void scopeIfIdentity() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Item someItem = new Item();
+        someItem.setName("Some Item");
+        em.persist(someItem);
+        em.getTransaction().commit();
+        em.close();
+        Long itemId = someItem.getId();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        Item a = em.find(Item.class, itemId);
+        Item b = em.find(Item.class, itemId);
+
+        assertSame(a, b);
+        assertTrue(a.equals(b));
+        assertEquals(a.getId(), b.getId());
+
+        em.getTransaction().commit();
+        em.close(); // Persistence Context is gone, 'a' and 'b' are now references to instances in detached state!
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        Item c = em.find(Item.class, itemId);
+        assertNotSame(a, c); // The "a" reference is still detached!
+        assertFalse(a.equals(c));
+        assertEquals(a.getId(), c.getId());
+
+        em.getTransaction().commit();
+        em.close();
+
+        Set<Item> allItems = new HashSet<>();
+        allItems.add(a);
+        allItems.add(b);
+        allItems.add(c);
+        assertEquals(2, allItems.size());
     }
 
     private EntityManagerFactory getDatabaseA() {
