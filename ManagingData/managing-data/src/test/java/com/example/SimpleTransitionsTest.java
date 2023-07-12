@@ -356,6 +356,29 @@ class SimpleTransitionsTest {
         assertEquals(2, allItems.size());
     }
 
+    @Test
+    void detach() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        User someUser = new User();
+        someUser.setUsername("johndoe");
+        someUser.setHomeAddress(new Address("Some Street", "1234", "Some City"));
+        em.persist(someUser);
+        em.getTransaction().commit();
+        em.close();
+        Long userId = someUser.getId();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        User user = em.find(User.class, userId);
+        em.detach(user);
+        assertFalse(em.contains(user));
+
+        em.getTransaction().commit();
+        em.close();
+    }
+
     private EntityManagerFactory getDatabaseA() {
         return emf;
     }
