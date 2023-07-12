@@ -5,10 +5,7 @@ import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -284,6 +281,34 @@ class SimpleTransitionsTest {
 
         emA.close();
         emB.close();
+
+    }
+
+    @Test
+    void flushModeType() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Item someItem = new Item();
+        someItem.setName("Original Name");
+        em.persist(someItem);
+        em.getTransaction().commit();
+        em.close();
+        Long itemId = someItem.getId();
+
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        Item item = em.find(Item.class, itemId);
+        item.setName("New Name");
+
+        em.setFlushMode(FlushModeType.COMMIT); // Disable flushing before queries
+        assertEquals("Original Name",
+                em.createQuery("select i.name from Item i where i.id = :id", String.class)
+                        .setParameter("id", itemId)
+                        .getSingleResult());
+
+        em.getTransaction().commit();
+        em.close();
 
     }
 
