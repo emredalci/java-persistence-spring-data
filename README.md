@@ -13,3 +13,4 @@ setofembeddablesorderby, mapofstringembeddables, mapofembeddable
 9. Mapping Association
 10. Advanced Entity Association - onetoone-sharedprimarykey, onetoone-foreignkey, onetoone-jointable, onetomany-bag,
 onetomany-embeddable-jointable, manytomany-bidirectional, manytomany-linkentity, manytomany-ternary
+11. Managing Data - managing-data, managing-data2
