@@ -344,7 +344,7 @@ class SimpleTransitionsTest {
         Item c = em.find(Item.class, itemId);
         assertNotSame(a, c); // The "a" reference is still detached!
         assertFalse(a.equals(c));
-        assertEquals(a.getId(), c.getId());
+        assertEquals(a.getId(), c.getId()); // Same database identifier value
 
         em.getTransaction().commit();
         em.close();
@@ -405,7 +405,7 @@ class SimpleTransitionsTest {
         em = emf.createEntityManager();
         em.getTransaction().begin();
         User user = em.find(User.class, userId);
-        assertEquals(user.getUsername(), "doejohn");
+        assertEquals("doejohn", user.getUsername());
         em.getTransaction().commit();
         em.close();
     }
