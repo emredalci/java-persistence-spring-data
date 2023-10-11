@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Optimistic {
 
-    private static EntityManagerFactory emf =
+    protected static EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("transactions");
 
-    private ConcurrencyTestData storeCategoriesAndItems() {
+    protected ConcurrencyTestData storeCategoriesAndItems() {
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -235,7 +235,8 @@ class Optimistic {
             If someone modified the Item concurrently, or placed a
             Bid concurrently with this procedure, Hibernate throws an exception.
         */
-        assertThrows(RollbackException.class, () -> em.getTransaction().commit());
+        EntityTransaction transaction = em.getTransaction();
+        assertThrows(RollbackException.class, transaction::commit);
         em.close();
 
     }
