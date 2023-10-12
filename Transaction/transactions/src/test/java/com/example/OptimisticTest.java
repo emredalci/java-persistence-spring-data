@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Optimistic {
+class OptimisticTest {
 
     protected static EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("transactions");

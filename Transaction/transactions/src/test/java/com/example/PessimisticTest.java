@@ -7,13 +7,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class Pessimistic extends Optimistic {
+class PessimisticTest extends OptimisticTest {
 
     @Test
     void pessimisticReadWrite() throws Exception {
@@ -94,6 +96,25 @@ class Pessimistic extends Optimistic {
 
         assertEquals(0, totalPrice.compareTo(new BigDecimal("108")));
 
+    }
+
+    @Test
+    void findLock() {
+        ConcurrencyTestData testData = storeCategoriesAndItems();
+        Long firstCategoryId = testData.getCategories().getFirstId();
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        Map<String, Object> hints = new HashMap<>();
+        hints.put("javax.persistence.lock.timeout", 5000);
+
+        // Executes a SELECT .. FOR UPDATE WAIT 5000
+        Category category = em.find(Category.class, firstCategoryId, LockModeType.PESSIMISTIC_WRITE, hints);
+        category.setName("New name");
+
+        em.getTransaction().commit();
+        em.close();
     }
 
 }
